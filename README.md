@@ -16,11 +16,9 @@ Built for modest hardware (tested on an i5 / 8GB RAM / no GPU, Windows).
 - Usable two ways: a **command-line tool** (`kis.py`) and a **local web UI**
   (`app.py`, Streamlit). Both share the same core engine — no duplicated logic.
 
-## One-time setup
-1. **Clone and install Python deps:**
+## Startup
+1. **Install Python deps:**
    ```
-   git clone https://github.com/<you>/knowledge-intelligence-system.git
-   cd knowledge-intelligence-system
    pip install -r requirements.txt
    ```
 2. **Install Ollama** (the local LLM runtime): https://ollama.com
