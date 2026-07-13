@@ -1,11 +1,3 @@
-"""Streamlit UI for the Local Knowledge Intelligence System (KIS).
-
-A recruiter-friendly front end for the offline "chat with your documents" engine
-in kis.py. Everything runs locally: embeddings via fastembed, vector + keyword
-search via LanceDB, generation via a small Ollama model. No cloud, no API keys.
-
-Run:  streamlit run app.py
-"""
 from __future__ import annotations
 
 import time
@@ -20,7 +12,6 @@ st.set_page_config(page_title="KIS · Local Document Intelligence",
                    page_icon="📚", layout="wide")
 
 
-# --- Small helpers ------------------------------------------------------------
 @st.cache_data(show_spinner=False, ttl=10)
 def cached_stats():
     return kis.index_stats()
@@ -30,7 +21,6 @@ def refresh_stats():
     cached_stats.clear()
 
 
-# --- Sidebar: system health + index contents ----------------------------------
 with st.sidebar:
     st.title("📚 KIS")
     st.caption("Local Knowledge Intelligence System")
@@ -91,7 +81,6 @@ with st.sidebar:
 
         st.divider()
         st.caption("Maintenance")
-        # Prune: drop chunks for files that vanished from the folder above.
         if st.button("Prune missing files", use_container_width=True):
             missing = kis.find_missing(folder)
             if not missing:
@@ -103,7 +92,6 @@ with st.sidebar:
                            f"missing file(s).")
                 refresh_stats()
                 st.rerun()
-        # Reset: wipe the whole index. Guarded by a confirm checkbox.
         sure = st.checkbox("Confirm full reset")
         if st.button("Reset index", use_container_width=True, disabled=not sure):
             if kis.reset_index():
@@ -114,7 +102,6 @@ with st.sidebar:
             st.rerun()
 
 
-# --- Header / project explainer (for reviewers & recruiters) ------------------
 st.title("Local Knowledge Intelligence System")
 st.markdown(
     "Ask questions about your own documents and get answers grounded **only** in "
@@ -134,14 +121,15 @@ it used.
 """
     )
     st.markdown(
-        "```\n"
-        "Documents → Parse → Chunk (overlap) → Embed (fastembed / BGE)\n"
-        "                                          │\n"
-        "                                   LanceDB (on-disk)\n"
-        "                              vector index + full-text (BM25)\n"
-        "                                          │\n"
-        "Question → Hybrid retrieve → Confidence gate → LLM (Ollama) → Cited answer\n"
-        "```"
+        """\
+```
+Documents → Parse → Chunk (overlap) → Embed (fastembed / BGE)
+                                          │
+                                   LanceDB (on-disk)
+                              vector index + full-text (BM25)
+                                          │
+Question → Hybrid retrieve → Confidence gate → LLM (Ollama) → Cited answer
+```"""
     )
     col_a, col_b = st.columns(2)
     with col_a:
@@ -170,18 +158,15 @@ it used.
     st.info("Tech: Python · Streamlit · LanceDB · fastembed (BAAI/BGE) · "
             "Ollama · PyMuPDF / python-docx / python-pptx / openpyxl", icon="🛠️")
 
-# Guard: nothing indexed -> guide the user instead of failing on first query.
 if cached_stats() is None:
     st.warning("No documents are indexed yet. Open **Manage index** in the "
                "sidebar and ingest a folder (try the bundled `sample_docs`).",
                icon="👈")
     st.stop()
 
-# --- Main tabs ----------------------------------------------------------------
 ask_tab, about_tab, where_tab = st.tabs(
     ["💬  Ask", "🧭  Explore a topic", "🔎  Find a term"])
 
-# --- Ask: grounded Q&A --------------------------------------------------------
 with ask_tab:
     st.subheader("Ask a question")
     st.caption("Answers are generated only from your indexed documents, with sources.")
@@ -221,7 +206,6 @@ with ask_tab:
                 st.divider()
                 render_sources(hits)
 
-# --- About: cross-document topic synthesis ------------------------------------
 with about_tab:
     st.subheader("Explore a topic across documents")
     st.caption("A short synthesis of what your documents say about a topic.")
@@ -251,7 +235,6 @@ with about_tab:
                 st.divider()
                 render_sources(hits)
 
-# --- Where: keyword search ----------------------------------------------------
 with where_tab:
     st.subheader("Find where a term appears")
     st.caption("Exact keyword (full-text) search — no LLM, instant.")
