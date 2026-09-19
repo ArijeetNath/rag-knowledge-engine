@@ -93,6 +93,3 @@ python kis.py ask "What is the approved budget for Aurora and who leads it?"
 - Ollama's default context window (~2048 tokens) is the ceiling here; passing a
   larger `num_ctx` crashes the runner on low RAM, so KIS keeps prompts small
   via chunk size + top-K instead.
-
-## Not yet built (planned)
-- OCR for scanned images (excluded — too heavy for 8GB)
